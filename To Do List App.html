@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern To-Do List</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, rgba(110, 142, 251, 0.7), rgba(167, 119, 227, 0.7)), 
+                        url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: background 0.3s;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, rgba(44, 62, 80, 0.7), rgba(75, 0, 130, 0.7)), 
+                        url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            transition: background 0.3s;
+        }
+
+        .dark-mode .container {
+            background: rgba(30, 30, 30, 0.95);
+            color: #ddd;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-mode h1 {
+            color: #ddd;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .input-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        #taskInput, #dueDateInput {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            min-width: 200px;
+        }
+
+        #dueDateInput {
+            min-width: 150px;
+        }
+
+        #taskInput:focus, #dueDateInput:focus {
+            border-color: #6e8efb;
+            box-shadow: 0 0 10px rgba(110, 142, 251, 0.4);
+        }
+
+        .dark-mode #taskInput, .dark-mode #dueDateInput {
+            border-color: #555;
+            background: #3a3a3a;
+            color: #ddd;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s, background 0.3s;
+        }
+
+        .add-button {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: white;
+        }
+
+        .add-button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #5a75d9, #8f5cc8);
+        }
+
+        #themeToggle {
+            background: #333;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: auto;
+            font-size: 1rem;
+        }
+
+        .dark-mode #themeToggle {
+            background: #ddd;
+            color: #333;
+        }
+
+        #themeToggle:hover {
+            transform: scale(1.1);
+        }
+
+        .task-list {
+            list-style: none;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: linear-gradient(135deg, #f0f2f5, #e4e7eb);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            animation: fadeIn 0.4s ease-in;
+            transition: transform 0.2s, box-shadow 0.3s;
+        }
+
+        .dark-mode .task-item {
+            background: linear-gradient(135deg, #2a2a2a, #363636);
+        }
+
+        .task-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .task-item.completed span {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .task-item input[type="checkbox"] {
+            margin-right: 10px;
+            accent-color: #6e8efb;
+        }
+
+        .task-item span {
+            flex: 1;
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .dark-mode .task-item span {
+            color: #ddd;
+        }
+
+        .task-item .due-date {
+            font-size: 0.9rem;
+            color: #666;
+            margin-left: 10px;
+        }
+
+        .dark-mode .task-item .due-date {
+            color: #aaa;
+        }
+
+        .task-item .delete-button {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+            padding: 8px 12px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .task-item .delete-button:hover {
+            transform: scale(1.1);
+            background: linear-gradient(135deg, #e55a5a, #e07b39);
+        }
+
+        .task-item .delete-button:active {
+            animation: pulse 0.2s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .task-item.delete {
+            animation: slideOut 0.5s ease-out forwards;
+        }
+
+        @keyframes slideOut {
+            to { opacity: 0; transform: translateX(100%); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 500px) {
+            .container {
+                padding: 1rem;
+                margin: 1rem;
+            }
+
+            #taskInput, #dueDateInput {
+                min-width: 100%;
+            }
+
+            #themeToggle {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>To-Do List</h1>
+        <div class="input-section">
+            <input type="text" id="taskInput" placeholder="Add a new task...">
+            <input type="date" id="dueDateInput">
+            <button class="add-button" onclick="addTask()">Add</button>
+            <button id="themeToggle" onclick="toggleTheme()">🌙</button>
+        </div>
+        <ul class="task-list" id="taskList"></ul>
+    </div>
+
+    <script>
+        // Task state management
+        let tasks = [];
+
+        // Sanitize input to prevent HTML injection
+        function sanitizeInput(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Load tasks from local storage
+        function loadTasks() {
+            try {
+                const storedTasks = JSON.parse(localStorage.getItem('todo-list'));
+                if (Array.isArray(storedTasks)) {
+                    tasks = storedTasks;
+                    tasks.forEach(task => addTaskToDOM(task));
+                } else {
+                    tasks = [];
+                }
+            } catch (e) {
+                console.error('Failed to load tasks:', e);
+                alert('Error loading tasks. Starting with an empty list.');
+                tasks = [];
+            }
+        }
+
+        // Save tasks to local storage
+        function saveTasks() {
+            try {
+                localStorage.setItem('todo-list', JSON.stringify(tasks));
+            } catch (e) {
+                console.error('Failed to save tasks:', e);
+                alert('Error saving tasks. Changes may not persist.');
+            }
+        }
+
+        // Add task to DOM
+        function addTaskToDOM(task) {
+            const taskList = document.getElementById('taskList');
+            const taskItem = document.createElement('li');
+            taskItem.className = 'task-item' + (task.completed ? ' completed' : '');
+            taskItem.innerHTML = `
+                <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(this)">
+                <span ondblclick="editTask(this)">${sanitizeInput(task.text)}</span>
+                ${task.dueDate ? `<span class="due-date">${sanitizeInput(task.dueDate)}</span>` : ''}
+                <button class="delete-button" onclick="deleteTask(this)">Delete</button>
+            `;
+            taskList.appendChild(taskItem);
+        }
+
+        // Refresh task list in DOM
+        function refreshTaskList() {
+            const taskList = document.getElementById('taskList');
+            taskList.innerHTML = '';
+            tasks.forEach(task => addTaskToDOM(task));
+        }
+
+        // Add new task
+        function addTask() {
+            const taskInput = document.getElementById('taskInput');
+            const dueDateInput = document.getElementById('dueDateInput');
+            const taskText = sanitizeInput(taskInput.value.trim());
+            const dueDate = dueDateInput.value;
+
+            if (taskText === '') {
+                alert('Please enter a task!');
+                return;
+            }
+
+            // Check for duplicate tasks
+            if (tasks.some(task => task.text.toLowerCase() === taskText.toLowerCase() && task.text !== '')) {
+                alert('This task already exists!');
+                return;
+            }
+
+            const task = {
+                text: taskText,
+                completed: false,
+                dueDate: dueDate ? new Date(dueDate).toLocaleDateString() : ''
+            };
+            tasks.push(task);
+            refreshTaskList();
+            saveTasks();
+            taskInput.value = '';
+            dueDateInput.value = '';
+        }
+
+        // Toggle task completion
+        function toggleTask(checkbox) {
+            const taskItem = checkbox.parentElement;
+            const taskText = taskItem.querySelector('span').textContent;
+            const task = tasks.find(t => t.text === taskText);
+            if (task) {
+                task.completed = checkbox.checked;
+                refreshTaskList();
+                saveTasks();
+            }
+        }
+
+        // Edit task
+        function editTask(span) {
+            const originalText = span.textContent;
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = originalText;
+            input.className = 'edit-input';
+            span.replaceWith(input);
+            input.focus();
+
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const newText = sanitizeInput(input.value.trim());
+                    if (newText !== '' && tasks.some(t => t.text.toLowerCase() === newText.toLowerCase() && t.text !== originalText)) {
+                        alert('This task already exists!');
+                        input.replaceWith(span);
+                        return;
+                    }
+                    const task = tasks.find(t => t.text === originalText);
+                    if (task) {
+                        task.text = newText;
+                        refreshTaskList();
+                        saveTasks();
+                    }
+                    input.replaceWith(span);
+                }
+            });
+
+            input.addEventListener('blur', function() {
+                input.replaceWith(span);
+            });
+        }
+
+        // Delete task (clear text or remove)
+        function deleteTask(button) {
+            const taskItem = button.parentElement;
+            const span = taskItem.querySelector('span');
+            const taskText = span.textContent;
+            const task = tasks.find(t => t.text === taskText);
+            if (!task) return;
+
+            const isEmpty = taskText === '';
+            if (!confirm(isEmpty ? 'Remove empty task?' : 'Clear task text?')) return;
+
+            if (isEmpty) {
+                taskItem.classList.add('delete');
+                taskItem.addEventListener('animationend', () => {
+                    tasks = tasks.filter(t => t !== task);
+                    taskItem.remove();
+                    saveTasks();
+                }, { once: true });
+            } else {
+                task.text = '';
+                refreshTaskList();
+                saveTasks();
+            }
+        }
+
+        // Toggle dark mode
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const button = document.getElementById('themeToggle');
+            button.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+        }
+
+        // Debounce rapid clicks
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        // Initialize
+        document.getElementById('taskInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') addTask();
+        });
+        document.querySelector('.add-button').addEventListener('click', debounce(addTask, 300));
+        document.querySelectorAll('.delete-button').forEach(button => {
+            button.addEventListener('click', debounce(deleteTask, 300));
+        });
+        window.onload = loadTasks;
+    </script>
+</body>
+</html>
