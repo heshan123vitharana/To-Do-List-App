@@ -26,7 +26,7 @@ A sleek and feature-rich to-do list application designed to help you stay organi
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/To-Do-List-App.git
+   git clone https://github.com/heshan123vitharana/To-Do-List-App.git
    ```
 2. Open the `To Do List App.html` file in your browser.
 
