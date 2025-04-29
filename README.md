@@ -50,7 +50,7 @@ To-Do-List-App/
 
 ## 🌐 Live Demo
 
-Check out the live demo [here](https://your-live-demo-link.com).
+Check out the live demo [here](https://heshan123vitharana.github.io/To-Do-List-App/).
 
 ## 🤝 Contributing
 
@@ -91,4 +91,3 @@ SOFTWARE.
 ---
 
 Made with ❤️ by [Heshan Witharana](https://github.com/heshan123vitharana)
-```
